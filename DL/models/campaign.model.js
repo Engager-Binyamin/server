@@ -17,7 +17,8 @@ const msgSchema = new mongoose.Schema({
       lead: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: "lead",
-        required: true,
+        // TODO- להחזיר את הריקוורד טרו אחרי שהמונגו נקי
+        // required: true,
       },
       receptionDate: {
         type: Date,

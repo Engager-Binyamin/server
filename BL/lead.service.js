@@ -30,6 +30,15 @@ async function addLeadToCamp(data){
     return {campaignId: data.campaign, lead: lastId}
 }
 
+async function updateLead(id, newData){
+    if(Object.keys(newData).includes('phone')){
+        const phoneIsExist = await leadController.readOne({phone: newData.phone});
+        if(phoneIsExist) throw {code: 500, msg:'phoneExist' }
+    }
+    return leadController.update(id, newData)
+}
+
+
 
 
 
@@ -47,4 +56,4 @@ async function addLeadToCamp(data){
 
 
 
-module.exports = {addLeadToCamp}
+module.exports = {addLeadToCamp, updateLead}

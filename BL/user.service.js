@@ -1,6 +1,6 @@
-const { update } = require("../DL/controllers/campaign.controller");
+
 const userController = require("../DL/controllers/user.controller");
-const { findByIdAndUpdate } = require("../DL/models/lead.model");
+
 
 // get all users
 async function getUsers() {
@@ -15,9 +15,9 @@ async function getUsers() {
 // get one user:
 async function getOneUser(phone) {
   let user = await userController.readOne({ phone: phone })
-  console.log("s", user)
+  // console.log("s", user)
   if (!user) {
-    throw { code: 408, msg: 'something went wrong' }
+    throw { code: 408, msg: 'The phone is not exist' }
   }
   return user
 }
@@ -26,7 +26,7 @@ async function getOneUser(phone) {
 async function del(phone) {
   let user = await userController.update({ phone, isActive: true })
   if (!user) {
-    throw { code: 408, msg: 'something went wrong' }
+    throw { code: 408, msg: 'The phone is not exists' }
   }
   return user
 }
@@ -35,7 +35,7 @@ async function del(phone) {
 async function updateOneUser(phone, data) {
   let user = await userController.updateUser({ phone: phone }, data)
   if (!user) {
-    throw { code: 408, msg: 'something went wrong' }
+    throw { code: 408, msg: 'The phone is not exists' }
   }
   return user
 }
@@ -43,13 +43,24 @@ async function updateOneUser(phone, data) {
 
 //add new user :
 async function createNewUser(body) {
-  const phoneIsExist = await userController.readOne({ phone: body.phone });
-  if (!phoneIsExist) {
-    const newUser = await userController.create({ ...body });
-    return newUser
+  var passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+  var phoneRegex = /^(?:0(?:[23489]|[57]\d)-\d{7})|(?:0(?:5[^7]|[2-4]|[8-9])(?:-?\d){7})$/;
+  const phoneIsexists = await userController.readOne({ phone: body.phone });
+  if (phoneIsexists) {
+    throw { code: 408, msg: 'This phone already exists' };
   }
-  throw { code: 408, msg: 'This phone already exists' };
-}
 
+  let email = body.email
+  let phone = body.phone
+  let password = body.password
+  if (!email.includes("@") || !email.includes(".")) throw { code: 408, msg: 'Email is not proper' }
+  if (!phoneRegex.test(phone)) throw { code: 408, msg: 'Phone is not proper' }
+  if (password.length < 8) throw { code: 408, msg: 'The password does not contain at least 8 characters' }
+  if (!passwordRegex.test(password)) throw { code: 408, msg: 'The password does not contain at least 1 leter and 1 number' }
+
+
+  const newUser = await userController.create({ ...body });
+  return newUser
+}
 
 module.exports = { createNewUser, getUsers, getOneUser, del, updateOneUser }
