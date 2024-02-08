@@ -48,7 +48,7 @@ async function delCampaign(campId) {
   if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
   const campaign = campaignController.readOne({ _id: campId });
   if (!campaign) throw { code: 404, msg: "Campaign is not exist!" };
-  return await campaignController.update({ _id: campId });
+  return await campaignController.update({ _id: campId} ,{ isActive: false });
 }
 async function delOneMessage(campId, msgId) {
   const message = await getOneMsg(campId, msgId);

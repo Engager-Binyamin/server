@@ -19,11 +19,12 @@ async function readOneWithoutPopulate(filter, populate) {
 }
 
 async function update(filter = {}, update) {
+    console.log(filter)
     return await campaignModel.findByIdAndUpdate(filter, update, { new: true })
 }
 
-function deleteById(id) {
-    return campaignModel.findByIdAndUpdate(id, { isActive: false }, { new: true })
+function deleteById(_id) {
+    return campaignModel.findByIdAndUpdate(_id, { isActive: false }, { new: true })
 }
 
 
