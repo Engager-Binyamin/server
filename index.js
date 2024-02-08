@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const PORT = 2500
+const PORT = process.env.port || 2500
 const campaignRouter = require('./routes/campaign.router');
 const leadRouter = require('./routes/lead.router');
 const userRouter = require("./routes/user.router");
