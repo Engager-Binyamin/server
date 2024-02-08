@@ -3,7 +3,6 @@ const userService = require('./BL/user.service');
 
 async function login(phone, password) {
     const user = await userService.getOneUser(phone)
-    console.log(user)
     if (password != user.password) throw "The password incorrect"
     //  הפקת טוקן בכניסה
     const token = jwt.sign({ phone: phone }, process.env.SECRET, { expiresIn: "7d" })
@@ -23,7 +22,6 @@ const checkClient = async (req, res, next) => {
         req.body.user = user
         next()
     } catch (err) {
-        console.log({err});
         res.status(401).send("Unauthorized")
     }
 }

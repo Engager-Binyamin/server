@@ -4,7 +4,6 @@ const campaignController= require('../DL/controllers/campaign.controller')
 async function addLeadToCamp(data){
     if(!data.campaign || !data.phone || !data.name) throw {code: 500, msg: 'User details are missing'};
     // TODO- check if phone is valid
-    console.log("cs2");
 
     const phoneIsExist = await leadController.readOne({phone: data.phone});
     if(phoneIsExist?.campaigns?.includes(data.campaign)) throw {code: 500, msg: 'The lead is already registered for this campaign'}

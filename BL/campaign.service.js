@@ -1,7 +1,7 @@
 const campaignController = require("../DL/controllers/campaign.controller");
 const userController = require("../DL/controllers/user.controller")
 const { io } = require("socket.io-client");
-const socket1 = io("http://localhost:3000");
+const socket1 = io(process.env.SOCKET_URL);
 const { isValidObjectId } = require('./functions')
 
 async function createNewCampaign(userId, body) {
@@ -52,13 +52,9 @@ async function delCampaign(campId) {
 }
 async function delOneMessage(campId, msgId) {
   const message = await getOneMsg(campId, msgId);
-  console.log("message: ", message);
   if (!message) throw { code: 481, msg: "msg not exist!" };
-  console.log("cs1");
   const campaign = await campaignController.readOne({ _id: campId });
-  console.log("cs2");
   if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
-  console.log("cs3");
   try {
     return await campaignController.updateOne(
       { _id: campId, 'msg._id': msgId },
@@ -256,12 +252,10 @@ async function pushAllCampaignLeadsToMsgLeads(campaignId, targetMsgId) {
     });
 
     const leadIds = campaignToUpdate.leads.map((lead) => ({ lead: lead._id }));
-    console.log(leadIds);
 
     const targetMsg = campaignToUpdate.msg.find((msg) =>
       msg._id.equals(targetMsgId)
     );
-    console.log(targetMsg);
 
     if (targetMsg) {
       targetMsg.leads = [...targetMsg.leads, ...leadIds];

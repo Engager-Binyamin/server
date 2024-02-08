@@ -9,9 +9,7 @@ router.post('/', async (req, res) => {
   try {
 
     const body = req.body
-    // console.log("r", req.body);
     const answer = await userService.createNewUser(body);
-    // console.log("rr", answer);
     res.send(answer);
   }
   catch (err) {
