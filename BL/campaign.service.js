@@ -41,7 +41,7 @@ async function updateCampaing(campId, data) {
 async function getAllCampaignsByUser(userId) {
   // do not touch!!!!
   if (!isValidObjectId(userId)) throw { code: 401, msg: "inValid _id" };
-  const campaigns = await campaignController.read({ user: userId });
+  const campaigns = await campaignController.read({ user: userId , 'leads.isActive': true});
   // if (!campaigns.length) throw { code: 404, msg: "no campaigns for this user" };
   return campaigns;
 }
@@ -49,7 +49,7 @@ async function delCampaign(campId) {
   if (!isValidObjectId(campId)) throw { code: 401, msg: "inValid _id" };
   const campaign = campaignController.readOne({ _id: campId });
   if (!campaign) throw { code: 404, msg: "Campaign is not exist!" };
-  return await campaignController.update({ _id: campId }, { isActive: false });
+  return await campaignController.update({ _id: campId });
 }
 async function delOneMessage(campId, msgId) {
   const message = await getOneMsg(campId, msgId);
