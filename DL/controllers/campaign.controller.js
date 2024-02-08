@@ -26,6 +26,7 @@ function deleteById(id) {
     return campaignModel.findByIdAndUpdate(id, { isActive: false }, { new: true })
 }
 
+
 async function updateOne(filter = {}, update) {
     return await campaignModel.updateOne(filter, update, { new: true })
 

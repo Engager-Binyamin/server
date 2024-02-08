@@ -12,6 +12,10 @@ const msgSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
   leads: [
     {
       lead: {
@@ -31,11 +35,11 @@ const msgSchema = new mongoose.Schema({
       }
     },
   ],
-  status:{
-    type : String,
-    enum:["created" ,"sent", "received"],
+  status: {
+    type: String,
+    enum: ["created", "sent", "received"],
     default: "created",
-    
+
   }
 });
 
@@ -49,17 +53,17 @@ const campaignSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  details : {
-type: String,
+  details: {
+    type: String,
 
   },
   isActive: {
     type: Boolean,
     default: true,
   },
-img :{
-  type: String ,
-},
+  img: {
+    type: String,
+  },
 
   msg: [msgSchema],
 

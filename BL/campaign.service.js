@@ -5,10 +5,9 @@ const socket1 = io("http://localhost:3000");
 const { isValidObjectId } = require('./functions')
 
 async function createNewCampaign(userId, body) {
-  // console.log(userId, campName);
   const {title, details , img}= body
   if (!isValidObjectId(userId)) throw { code: 401, msg: "inValid _id" };
-    campName = title.trim();
+  campName = title.trim();
   const nameIsExist = await campaignController.readOne({
     user: userId,
     title: campName,
@@ -17,8 +16,8 @@ async function createNewCampaign(userId, body) {
   const created = await campaignController.create({
     user: userId,
     title: campName,
-    details : details,
-    img :img
+    details: details,
+    img: img
   });
   const updatedUser = await userController.updateOneByFilter({ _id: userId }, { $push: { campaigns: created._id } });
   if (updatedUser) console.log('update user', updatedUser);
@@ -60,10 +59,15 @@ async function delOneMessage(campId, msgId) {
   console.log("cs2");
   if (!campaign) throw { code: 480, msg: "id campaign not exist!" };
   console.log("cs3");
-  return await campaignController.update(
-    { _id: campId },
-    { $pull: { msg: { _id: msgId } } }
-  );
+  try {
+    return await campaignController.updateOne(
+      { _id: campId, 'msg._id': msgId },
+      { $set: { 'msg.$.isActive': false } },
+    )
+
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 async function addNewMsg(id, body) {
@@ -150,7 +154,7 @@ async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
   if (!campaign) throw { msg: "no messeges in this campaign", code: 404 }
 
   let msg = campaign.msg.find(m => m._id == msgId);
-  const notSentLeadsList =  msgNotSentLeads(campaign, msgId);
+  const notSentLeadsList = msgNotSentLeads(campaign, msgId);
   notSentLeadsList.forEach((l) => {
     if (!l.isActive) return;
 
@@ -163,17 +167,17 @@ async function sendSpecificMsgToCampaignLeads(capId, msgId, userPhone) {
     socket1.emit("data", data);
   });
 
-    //TODO: לעלות פה את הקאונטר או לחכות לתשובה מהווצפ שבאמת נשלח
-    const user = userController.readOne({phone: userPhone});
-    const msgSentNow = user.messagesSent || 0
-    const updatedMsgCounter = await userController.updateUser({phone: phone}, { messagesSent: msgSentNow + 1 });
-  
-    if (msgSentNow >= 29) {
-      const updatedSubscription = await userController.updateUser({phone: phone}, { subscription: "expired" });
-      throw { code: 403, msg: 'end of trial period'}
-    }
+  //TODO: לעלות פה את הקאונטר או לחכות לתשובה מהווצפ שבאמת נשלח
+  const user = userController.readOne({ phone: userPhone });
+  const msgSentNow = user.messagesSent || 0
+  const updatedMsgCounter = await userController.updateUser({ phone: phone }, { messagesSent: msgSentNow + 1 });
 
-  return { leads: campaign.leads, msg};
+  if (msgSentNow >= 29) {
+    const updatedSubscription = await userController.updateUser({ phone: phone }, { subscription: "expired" });
+    throw { code: 403, msg: 'end of trial period' }
+  }
+
+  return { leads: campaign.leads, msg };
 }
 
 
@@ -181,7 +185,7 @@ async function msgSentLeads(campaignObj, msgId) {
   const msgObject = campaignObj?.msg?.find?.(msgObj => msgObj._id === msgId)
   const arrayOfLeadsInMsg = msgObject?.leads || []
 
-  return  arrayOfLeadsInMsg
+  return arrayOfLeadsInMsg
 }
 
 async function msgNotSentLeads(campaignObj, msgId) {
@@ -282,6 +286,10 @@ async function delLeadFromCamp(capId, leadId) {
   );
 
   return updateIsActiv;
+}
+
+async function deleteMsgFromCampaign() {
+
 }
 
 
