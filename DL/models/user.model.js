@@ -39,6 +39,23 @@ const userSchema = new mongoose.Schema({
       },
     },
   ],
+
+  subscription: {
+    type : String, 
+    enum : ['trial', 'active', 'expired'],
+    default : 'trial'
+  },
+
+  createdData : {
+    type: Date,
+    default: Date.now()
+  },
+
+  messagesSent : {
+    type: Number, 
+    default: 0
+  }
+
 });
 
 const userModel = mongoose.model("user", userSchema);

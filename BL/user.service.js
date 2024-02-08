@@ -1,5 +1,7 @@
 
+const { update } = require("../DL/controllers/campaign.controller");
 const userController = require("../DL/controllers/user.controller");
+const scheduleService = require("./schedule.service");
 
 
 // get all users
@@ -15,7 +17,6 @@ async function getUsers() {
 // get one user:
 async function getOneUser(phone) {
   let user = await userController.readOne({ phone: phone })
-  // console.log("s", user)
   if (!user) {
     throw { code: 408, msg: 'The phone is not exist' }
   }
@@ -40,6 +41,16 @@ async function updateOneUser(phone, data) {
   return user
 }
 
+// סיום תקופת נסיון ושינוי הסבסקרפשן ל-אקספרייד
+async function endOfTrialPeriod(phone){
+  const user = await userController.readOne({phone: phone});
+  const subscription = user.subscription;
+  let updatedUser ;
+  if(subscription == 'trial'){
+    updatedUser = userController.updateUser({phone: phone}, {subscription: 'expired'});
+  }
+  return updatedUser
+}
 
 //add new user :
 async function createNewUser(body) {
@@ -49,17 +60,23 @@ async function createNewUser(body) {
   if (phoneIsexists) {
     throw { code: 408, msg: 'This phone already exists' };
   }
-
   let email = body.email
   let phone = body.phone
   let password = body.password
   if (!email.includes("@") || !email.includes(".")) throw { code: 408, msg: 'Email is not proper' }
   if (!phoneRegex.test(phone)) throw { code: 408, msg: 'Phone is not proper' }
-  if (password.length < 8) throw { code: 408, msg: 'The password does not contain at least 8 characters' }
+  if (password?.length < 8) throw { code: 408, msg: 'The password does not contain at least 8 characters' }
   if (!passwordRegex.test(password)) throw { code: 408, msg: 'The password does not contain at least 1 leter and 1 number' }
 
+  // האם צריך לשלוח ביצירה דיקסקרפשן של תקופת נסיון או שיש לו אופציה ישר להרשם?
+  const newUser = await userController.create({ ...body , subscription: 'trial'});
+  let createdDate = new Date(); 
+  const expiredDate = new Date(createdDate);
+  expiredDate.setDate(expiredDate.getDate() + 14);
+// let futureDate = new Date(createdDate.getTime());
+// futureDate.setMinutes(createdDate.getMinutes() + 2);
+  scheduleService.convertToDateAndExec(expiredDate, ()=> endOfTrialPeriod(phone));
 
-  const newUser = await userController.create({ ...body });
   return newUser
 }
 

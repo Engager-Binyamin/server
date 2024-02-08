@@ -14,7 +14,9 @@ router.post("/", async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        res.status(401).send("something went wrong");
+        // res.status(401).send("something went wrong");
+        res.status((err.code) || 401).send({msg: err.msg || 'something went wrong'});
+
     }
 })
 

@@ -49,10 +49,17 @@ const campaignSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  details : {
+type: String,
+
+  },
   isActive: {
     type: Boolean,
     default: true,
   },
+img :{
+  type: String ,
+},
 
   msg: [msgSchema],
 
