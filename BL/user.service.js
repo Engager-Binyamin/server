@@ -25,7 +25,7 @@ async function getOneUser(phone) {
 
 // delete user:
 async function del(phone) {
-  let user = await userController.update({ phone, isActive: true })
+  let user = await userController.update({ phone, isActive: false })
   if (!user) {
     throw { code: 408, msg: 'The phone is not exists' }
   }
