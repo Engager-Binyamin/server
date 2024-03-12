@@ -45,9 +45,6 @@ router.get('/',checkClient, async (req, res) => {
 router.get('/:campId', async (req, res) => {
   try {
     const campId = req.params.campId;
-    // console.log("cr1 - campId" , campId );
-    // console.log(isValidObjectId(campId));
-
     const campaign = await campaignService.getOneCamp(campId);
     res.send(campaign);
   } catch (err) {

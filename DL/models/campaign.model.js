@@ -14,7 +14,7 @@ const receivedMsg = new mongoose.Schema({
     default: "created",
 
   },
-  sentData: {
+  sentDate: {
     type: Date,
     default: Date.now
   }
@@ -51,7 +51,9 @@ const leadSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  extra: mongoose.Schema.Types.Mixed 
+  extra:{
+    type: mongoose.SchemaTypes.Mixed
+  }
 
 });
 const msgSchema = new mongoose.Schema({

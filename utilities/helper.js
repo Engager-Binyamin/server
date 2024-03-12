@@ -1,13 +1,8 @@
-const { MongoClient, ObjectId } = require('mongodb');
+const {  ObjectId } = require('mongodb');
 
 // Function to validate ObjectId
 function isValidObjectId(id) {
-    try {
-      new ObjectId(id);
-      return true;
-    } catch (error) {
-      return false;
-    }
+    return ObjectId.isValid(id)
   }
 
 module.exports =  {isValidObjectId}

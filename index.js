@@ -27,8 +27,8 @@ app.use(express.static('public'))
 
 
 app.use('/campaign', campaignRouter);
-// app.use('/campaign', msgRouter);
-app.use('/lead', leadRouter);
+app.use('/campaign', msgRouter);
+app.use('/campaign', leadRouter);
 app.use('/user', userRouter);
 app.use('/login', loginRouter);
 app.use('/webhook', webhookRouter)
