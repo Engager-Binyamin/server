@@ -324,8 +324,27 @@ router.put('/:campId/msg/:msgId/update-queue', async (req, res) => {
     try {
         const msg = await msgService.getOneMsg(campaignId, messageId)
         if (msg) {
-            const update = msgQueueController.updateQueue(messageId, newDate)
-            console.log(update);
+            const result = msgQueueController.updateQueue(messageId, newDate)
+            const response = {
+                acknowledged: result.acknowledged,
+                matchedCount: result.matchedCount,
+                modifiedCount: result.modifiedCount,
+            }
+            // const response = { success: true }
+            // res.send(response)
+            if (response.acknowledged && response.modifiedCount > 0) {
+
+                res.send({ success: true, message: "Update successful.", data: response })
+            } else if (response.acknowledged && response.matchedCount === 0) {
+
+                res.send({ success: false, message: "No documents found to update.", data: response });
+            } else if (response.acknowledged && response.modifiedCount === 0) {
+
+                res.send({ success: false, message: "Documents already up to date.", data: response });
+            } else {
+
+                res.send({ success: false, message: "Update not acknowledged by the server.", data: response });
+            }
         }
     } catch (error) {
         res.status((err.code) || 500).send({ msg: err.msg || 'something went wrong' });
