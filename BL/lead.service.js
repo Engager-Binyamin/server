@@ -6,12 +6,15 @@ const userModel = require('../DL/models/user.model')
 const { isValidObjectId } = require('../utilities/helper')
 
 // ADD A NEW LEAD TO A CAMP
-async function addLeadToCamp(campaignId, userId, data) {
+async function addLeadToCamp(campaignId, userId, data, token = false) {
   if (!data.phone || !data.fullName)
     throw { code: 400, msg: "User details are missing" };
   // TODO- check if phone is valid
   const campaign = await campaignController.readOne({ _id: userId, _id: campaignId });
   if (!campaign) throw { code: 404, msg: "Campaign not found" };
+  if (token){
+    if (token != campaign.webhook) throw { code: 404, msg: "Campaign not found" }
+  } 
 
   const phoneIsExist = await campaign.leads.some(
     (lead) => lead.phone === data.phone
@@ -32,7 +35,7 @@ async function addLeadToCamp(campaignId, userId, data) {
     //  יש דרך יותר יפה? הדיפולט בסכמה לא עובד
     email: data.email ? String(data.email) : "",
     notes: data.notes ? String(data.notes) : "",
-    extra:{}
+    extra: {}
   }
   if (extraKeys.length) {
     extraKeys.forEach(key => {
