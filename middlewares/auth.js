@@ -99,7 +99,7 @@ const checkToken = async (token) => {
 const sendToAddLead = async (token, data) => {
     let res = await checkToken(token)
     const { campaignId, userId } = res
-    return 'the lede create' + await leadService.addLeadToCamp(campaignId, userId, data.data)
+    return 'the lede create' + await leadService.addLeadToCamp(campaignId, userId, data.data, token)
 }
 module.exports = { createToken, sendToAddLead, login, mwToken, tokenToUser }
 
