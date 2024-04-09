@@ -1,44 +1,24 @@
-const leadModel = require('../models/lead.model');
 const campaignModel = require('../models/campaign.model')
 
 
-const create = async (data) => {
-    return await leadModel.create(data)
+const create = async (campId, data) => { }
+
+const update = async (campId, filter, newData) => {
+
 }
 
-const update = async (id, newData) => {
-    return leadModel.findByIdAndUpdate(id, newData)
+const read = async (campId, filter) => { }
+
+
+
+const readOne = async (leadPhone) => {
+    try { 
+        const lead = await campaignModel.findOne({ 'leads.phone': leadPhone });
+        return lead;
+    } catch (error) {
+        console.error("Error reading lead:", error);
+        throw error;
+    }
 }
 
-const read = async (filter) => {
-    return await leadModel.find(filter)
-}
-const readOne = async (filter) => {
-    return await leadModel.findOne(filter)
-}
-
-// const readOne = async (filter) => {
-//     const lead = await leadModel.findOne(filter)
-//         .populate("campaigns")
-
-
-//     return lead
-// }
-
-// getOne({ _id: "65bf91d6beecba97e97e8baf" })
-
-
-// const turnInactive = async (id) => {
-//     return await leadModel.findByIdAndUpdate(id, { isActive: false })
-// }
-
-// const turnActive = async (id) => {
-//     await leadModel.findByIdAndUpdate(id, { isActive: true })
-// }
-
-
-
-
-
-
-module.exports = { create, update, read,readOne}
+module.exports = { create, update, read, readOne }

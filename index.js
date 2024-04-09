@@ -2,12 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const PORT = 2500
-const campaignRouter = require('./routes/campaign.router');
-const leadRouter = require('./routes/lead.router');
-const userRouter = require("./routes/user.router");
-const loginRouter = require("./routes/login.router");
-const webhookRouter = require("./routes/webhook.router")
-const paymentRouter = require("./routes/payment.router")
+const mainRouter = require('./routes/mainRouter')
 
 const db = require('./DL/db')
 
@@ -16,24 +11,21 @@ db.connect();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'))
 
-app.use('/campaign', campaignRouter);
-app.use('/lead', leadRouter);
-app.use('/user', userRouter);
-app.use('/login', loginRouter);
-app.use('/webhook', webhookRouter)
+app.use('/', mainRouter)
 
-app.use('/payment', paymentRouter);
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerDocument = require('./swagger.json');
+const { maxCamp } = require('./middlewares/plans');
 
 const options = {
     swaggerDefinition: {
         openapi: '3.0.0',
         info: { title: 'How to use Raouts', description: 'Wherever {variable} appears, remove the {} and add : before' },
         servers: [{ url: 'http://localhost:3000', }],
-        tags: [{ name: 'Campaign', }, { name: 'Message', }, { name: 'Lead', },{ name: 'WhatsApp', }],
+        tags: [{ name: 'Campaign', }, { name: 'Message', }, { name: 'Lead', }, { name: 'WhatsApp', }],
     },
     apis: ['./routes/*.router.js'],
 };
