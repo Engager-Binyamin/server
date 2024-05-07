@@ -1,40 +1,32 @@
 const userModel = require('../models/user.model');
-// const mongoose = require("mongoose");
-// const bcrypt = require("bcrypt");
-// const saltRounds = 10;
 
-
-// bcrypt.hash(password, saltRounds, function (error, hash) {
-//     if (error) {
-//         return res.status(500).json({ error })
-//     }
-// })
-
-
-
-// add new user 
 async function create(data) {
-    let newUser = await userModel.create(data);
-    // console.log(newUser);
-    return newUser;
-}
-// get all users:
-async function read() {
-    let users = await userModel.find();
-    return users;
+    return await userModel.create(data);
 }
 
-// read one user
-async function readOne(filter) {
-    let user = await userModel.findOne(filter)
-    return user
+
+async function read(filter = {}) {
+    return await userModel.find(filter);
 }
 
-// update by filter
-async function updateUser(phone, data) {
-
-    let userToUpdate = await userModel.updateOne(phone, data)
-    return userToUpdate;
+async function readAllWithPopulate(filter, select, populate) {
+    return await userModel.find(filter).select(select).populate(populate)
 }
 
-module.exports = { create, read, readOne, updateUser }
+async function readOne(filter, select, populate) {
+    return await userModel.findOne(filter).select(select).populate(populate)
+}
+
+async function update(filter, data) {
+    return await userModel.updateOne(filter, data, { new: true })
+}
+
+async function updateOne(filter, data) {
+    return await userModel.updateOne(filter, data, { new: true })
+}
+
+async function updateUser(query, data) {
+    return await userModel.updateOne(query, { $set: data }, { upsert: true });
+}
+
+module.exports = { create, read, readOne, update, updateOne, updateUser, readAllWithPopulate }
