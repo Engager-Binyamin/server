@@ -7,31 +7,24 @@ const { isValidObjectId } = require('../utilities/helper')
 
 // ADD A NEW LEAD TO A CAMP
 async function addLeadToCamp(campaignId, userId, data, token = false) {
-  if (!data.phone || !data.fullName)
-    throw { code: 400, msg: "User details are missing" };
+  if (!data.phone || !data.fullName) throw { code: 400, msg: "User details are missing" };
+
   // TODO- check if phone is valid
   const campaign = await campaignController.readOne({ _id: userId, _id: campaignId });
   if (!campaign) throw { code: 404, msg: "Campaign not found" };
-  if (token){
-    if (token != campaign.webhook) throw { code: 404, msg: "Campaign not found" }
-  } 
 
-  const phoneIsExist = await campaign.leads.some(
-    (lead) => lead.phone === data.phone
-  );
-  if (phoneIsExist)
-    throw {
-      code: 500,
-      msg: "The lead is already registered for this campaign",
-    };
+  if (token)
+    if (token != campaign.webhook) throw { code: 404, msg: "Campaign not found" }
+
+
   // Check if the lead is already registered for this campaign
+  const phoneIsExist = await campaign.leads.some((lead) => lead.phone === data.phone);
+  if (phoneIsExist) throw ({ code: 500, msg: "The lead is already registered for this campaign" });
 
   let extraKeys = Object.keys(data.extra || {});
-  let mappedLead = {};
-  mappedLead = {
+  let mappedLead = {
     phone: String(data.phone),
     fullName: String(data.fullName),
-
     //  יש דרך יותר יפה? הדיפולט בסכמה לא עובד
     email: data.email ? String(data.email) : "",
     notes: data.notes ? String(data.notes) : "",
@@ -45,8 +38,8 @@ async function addLeadToCamp(campaignId, userId, data, token = false) {
       }
     })
   }
-  campaign.leads.push(mappedLead);
 
+  campaign.leads.push(mappedLead);
   await campaign.save();
 
   return mappedLead;

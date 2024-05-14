@@ -7,6 +7,7 @@ const { mwToken } = require("../middlewares/auth");
 // const {checkClient} = require("../middlewares/auth");
 const { maxCamp } = require("../middlewares/plans");
 
+
 // בדיקת טוקן באופן אוטומטי לפני שאר הראוטרים
 // לשקול לאפשר שורה זו
 // router.use(auth.mwToken)
@@ -33,6 +34,16 @@ router.post('/', mwToken, maxCamp, async (req, res) => {
   }
 })
 
+router.get('/msg/all-not-received', mwToken , async (req, res) => {
+  try {
+    const msgs = await campaignService.getMessagesNotSentByUser(req.body.user._id)
+    res.json(msgs)
+  } catch (error) {
+    console.log({error});
+    res.status((err.code) || 404).send({ msg: err.msg || 'something went wrong' });
+  }
+})
+
 // get all campigns
 router.get('/', mwToken, async (req, res) => {
   try {
@@ -47,6 +58,7 @@ router.get('/', mwToken, async (req, res) => {
 })
 
 
+// TODO - probably not working missing :leadId
 router.get('/leadId/all', async (req, res) => {
   try {
     const leadId = req.params.leadId
@@ -97,9 +109,11 @@ router.delete('/:campId', async (req, res) => {
   } catch (err) {
     // res.status(404).send(err.msg);
     res.status((err.code) || 404).send({ msg: err.msg || 'something went wrong' });
-
+    
   }
 })
+
+
 
 
 

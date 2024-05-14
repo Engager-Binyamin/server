@@ -48,16 +48,18 @@ async function countFirstMsg(req, res, next) {
                     { 'msgCount.date': date.setDate(date.getDate() + 30) }),
 
             ]);
-        } throw " ERROR "
-
+        }
+        // TODO - check this function
+        // throw " ERROR "
+        
         if (user.msgCount.firstMsgCount < user.subscription.opening_msg_to_new_lids) {
             next()
         }
     } catch (err) {
         console.log({ err });
         res
-            .status(err.code || 500)
-            .send({ msg: err.msg || "no permission /You are not allowed to perform this action , sorry" });
+        .status(err.code || 500)
+        .send({ msg: err.msg || "no permission /You are not allowed to perform this action , sorry" });
     }
 }
 
@@ -73,13 +75,15 @@ async function countMsg(req, res, next) {
                     { 'msgCount.counter': 0 },
                     { 'msgCount.firstMsgCount': 0 },
                     { 'msgCount.date': date.setDate(date.getDate() + 30) }),
-            ]);
-        } throw " ERROR "
-        if (user.msgCount.counter < user.subscription.msg_number) {
-            next()
-        }
-    } catch (err) {
-        console.log({ err });
+                ]);
+            }
+            // TODO - check this function
+            // throw " ERROR "
+            if (user.msgCount.counter < user.subscription.msg_number) {
+                next()
+            }
+        } catch (err) {
+            console.log({ err });
         res
             .status(err.code || 500)
             .send({ msg: err.msg || "no permission /You are not allowed to perform this action , sorry" });

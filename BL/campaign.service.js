@@ -22,6 +22,25 @@ async function getAllCampaignsByUser(userId) {
   return campaigns;
 }
 
+// TODO - YOSEF - probably not needed cz there a msg queue - but there no get all there
+// get all not read msgs in all campaigns by user
+async function getMessagesNotSentByUser(userId) {
+  if (!isValidObjectId(userId)) throw { code: 401, msg: "inValid _id" };
+  // maybe we can take all the campaigns from the req.user.campaigns
+  const campaigns = await campaignController.read({ user: userId, isActive: true });
+  const msgs = []
+  campaigns.map(cam => cam?.receivedMsgs?.forEach?.(ms => ms.status !== "received" && msgs.push({
+    leadName: cam.leads.find(lead => lead._id.toString() === ms.leadId.toString()).fullName, 
+    leadPhone: cam.leads.find(lead => lead._id.toString() === ms.leadId.toString()).phone,
+    subject: cam.msg.find(msg => msg._id.toString() === ms.msgId.toString()).subject,
+    campaignTitle: cam.title,
+    leadId: ms.leadId,
+    msgId: ms.msgId,
+    status: ms.status,
+    campId: cam._id,
+  })))
+  return msgs;
+}
 
 // To get jus ONE campaign and the information (user & msg & leads & received msgs)
 async function getOneCamp(campId) {
@@ -93,5 +112,6 @@ module.exports = {
   getOneCamp,
   createNewCampaign,
   updateCampaign,
-  delCampaign
+  delCampaign,
+  getMessagesNotSentByUser
 }
