@@ -107,7 +107,16 @@ const campaignSchema = new mongoose.Schema({
   webhook: {
     type: String,
   },
-
+  
+  fields: {
+    type: [{ en: String, he: String }],
+    default: [
+      { en: 'fullName', he: 'שם' },
+      { en: 'email', he: 'אימייל' },
+      { en: 'phone', he: 'טלפון' },
+      { en: 'notes', he: 'הערות' },
+      { en: 'joinDate', he: 'הצטרפות' }]
+  },
   msg: [msgSchema],
   leads: [leadSchema],
   receivedMsgs: [receivedMsg],

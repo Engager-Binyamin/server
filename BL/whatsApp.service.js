@@ -147,9 +147,6 @@ async function updateStatusMsgOfOneLead(data) {
 }
 
 
-// TODO ?? NECESSARY ?
-
-
 socket1.on('connect', () => {
     console.log('Connected to server');
 });
@@ -173,6 +170,6 @@ module.exports = {
     msgSentLeads,
     msgNotSentLeads,
     pushAllCampaignLeadsToMsgLeads,
-    updateStatusMsgOfOneLeadת
+    updateStatusMsgOfOneLead
 }
 

@@ -12,7 +12,7 @@ router.post("/webhook/:token", async (req, res) => {
       const userId = payload.userId
       const campId = payload.campaignId
 
-      let result = await leadServices.addLeadToCamp(campId, userId,req.body)
+      let result = await leadServices.addLeadToCamp(campId, userId,req.body,true)
       res.send(result)
     } catch (err) {
       res

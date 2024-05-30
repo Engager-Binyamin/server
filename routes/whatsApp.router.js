@@ -1,39 +1,10 @@
 const express = require("express");
 const router = express.Router();
-
+const { mwToken } = require('../middlewares/auth');
 
 // TODO - this file don't connect to anything - missing import and more
 
 // get all leads from WhatsApp ---VV-----------------
-/**
- * @swagger
- * /whatsapp/camp/{idCamp}/msg/{msgId}/leads:
- *   get:
- *     summary: Get all leads from WhatsApp
- *     tags:
- *       - WhatsApp
- *     parameters:
- *       - in: path
- *         name: idCamp
- *         required: true
- *         description: ID of the campaign
- *         schema:
- *           type: string
- *       - in: path
- *         name: msgId
- *         required: true
- *         description: ID of the message
- *         schema:
- *           type: string
- *     responses:
- *       '200':
- *         description: Successfully retrieved WhatsApp leads
- *       '404':
- *         description: Leads not found for the given campaign and message ID
- *       '500':
- *         description: Internal server error
- */
-
 router.get('/whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
     try {
         const idCamp = req.params.idCamp;
@@ -45,47 +16,6 @@ router.get('/whatsapp/camp/:idCamp/msg/:msgId/leads', async (req, res) => {
         res.status(err.code || 500).send({ msg: err.msg || 'something went wrong' });
     }
 });
-
-
-
-
-
-// function for whatsapp single lead -VV------------------------
-/**
- * @swagger
- * /whatsapp/camp/{idCamp}/msg/{msgId}/lead/{leadId}:
- *   get:
- *     summary: Get a single lead from WhatsApp
- *     description: Retrieves a single lead from WhatsApp based on the specified campaign ID, message ID, and lead ID.
- *     tags:
- *       - WhatsApp
- *     parameters:
- *       - in: path
- *         name: idCamp
- *         required: true
- *         description: ID of the campaign
- *         schema:
- *           type: string
- *       - in: path
- *         name: msgId
- *         required: true
- *         description: ID of the message
- *         schema:
- *           type: string
- *       - in: path
- *         name: leadId
- *         required: true
- *         description: ID of the lead
- *         schema:
- *           type: string
- *     responses:
- *       '200':
- *         description: Successfully retrieved the WhatsApp lead
- *       '404':
- *         description: Lead not found for the given campaign, message, and lead ID
- *       '444':
- *         description: Custom error code for the specific scenario
- */
 
 router.get('/whatsapp/camp/:idCamp/msg/:msgId/lead/:leadId', async (req, res) => {
     try {
@@ -106,9 +36,6 @@ router.get('/whatsapp/camp/:idCamp/msg/:msgId/lead/:leadId', async (req, res) =>
     }
 });
 
-
-
-
 router.put('/whatsapp/camp/:campId/msg/:msgId/lead/:leadId/newStatus/:newStatus', async (req, res) => {
     try {
         // TODO funcion to the middleware
@@ -124,5 +51,27 @@ router.put('/whatsapp/camp/:campId/msg/:msgId/lead/:leadId/newStatus/:newStatus'
         res.status(405).send(err.msg);
     }
 })
+
+
+router.post('/send', mwToken, async (req, res) => {
+    let data = {
+        userId: req.body.user._id,
+        campaignId: req.body.campaignId,
+        msgId: req.body.msgId,
+    };
+
+    try {
+
+    }
+    catch (err) {
+        // res.status(400).send(err)
+        console.error(err);
+        res.status((err.code) || 400).send({ msg: err.msg || 'something went wrong' });
+    }
+})
+
+
+
+
 
 module.exports = router

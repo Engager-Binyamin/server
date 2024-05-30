@@ -9,36 +9,41 @@ const { isValidObjectId } = require('../utilities/helper')
 async function addLeadToCamp(campaignId, userId, data, token = false) {
   if (!data.phone || !data.fullName) throw { code: 400, msg: "User details are missing" };
 
-  // TODO- check if phone is valid
-  const campaign = await campaignController.readOne({ _id: userId, _id: campaignId });
+  const campaign = await campaignController.readOne({ user: userId, _id: campaignId });
   if (!campaign) throw { code: 404, msg: "Campaign not found" };
 
-  if (token)
-    if (token != campaign.webhook) throw { code: 404, msg: "Campaign not found" }
-
-
   // Check if the lead is already registered for this campaign
-  const phoneIsExist = await campaign.leads.some((lead) => lead.phone === data.phone);
-  if (phoneIsExist) throw ({ code: 500, msg: "The lead is already registered for this campaign" });
+  const phoneIsExist = campaign.leads.some((lead) => lead.phone === data.phone);
+  if (phoneIsExist) throw ({ code: 400, msg: "The lead is already registered for this campaign" });
 
-  let extraKeys = Object.keys(data.extra || {});
-  let mappedLead = {
-    phone: String(data.phone),
-    fullName: String(data.fullName),
-    //  יש דרך יותר יפה? הדיפולט בסכמה לא עובד
-    email: data.email ? String(data.email) : "",
-    notes: data.notes ? String(data.notes) : "",
-    extra: {}
-  }
-  if (extraKeys.length) {
-    extraKeys.forEach(key => {
-      mappedLead.extra[key] = {
-        he: data.extra[key].he,
-        value: data.extra[key].value
+  let extra = {}
+  for (e in data) {
+    if (e.startsWith('ex_')) {
+      let ks = e.split('ex_')[1]
+      if (ks.endsWith('_he')) {
+        let ke = ks.split('_he')[0]
+        if (!extra[ke]) extra[ke] = {}
+        extra[ke].he = data[e]
+        continue
       }
-    })
+      if (!extra[ks]) extra[ks] = {}
+      extra[ks].value = data[e]
+    }
   }
 
+  Object.keys(extra).forEach(k => {
+    if (!campaign.fields.some(f => f.en == k)) {
+      campaign.fields.push({ en: k, he: extra[k].he })
+    }
+  })
+
+  let mappedLead = {
+    phone: data.phone,
+    fullName: data.fullName,
+    email: data.email,
+    notes: data.notes,
+    extra
+  }
   campaign.leads.push(mappedLead);
   await campaign.save();
 
